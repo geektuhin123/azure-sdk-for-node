@@ -18,493 +18,1100 @@ export { CloudError } from 'ms-rest-azure';
 
 /**
  * @class
+ * Initializes a new instance of the MetricsPostBodySchemaParameters class.
+ * @constructor
+ * The parameters for a single metrics query
+ *
+ * @member {string} metricId Possible values include: 'requests/count',
+ * 'requests/duration', 'requests/failed', 'users/count',
+ * 'users/authenticated', 'pageViews/count', 'pageViews/duration',
+ * 'client/processingDuration', 'client/receiveDuration',
+ * 'client/networkDuration', 'client/sendDuration', 'client/totalDuration',
+ * 'dependencies/count', 'dependencies/failed', 'dependencies/duration',
+ * 'exceptions/count', 'exceptions/browser', 'exceptions/server',
+ * 'sessions/count', 'performanceCounters/requestExecutionTime',
+ * 'performanceCounters/requestsPerSecond',
+ * 'performanceCounters/requestsInQueue',
+ * 'performanceCounters/memoryAvailableBytes',
+ * 'performanceCounters/exceptionsPerSecond',
+ * 'performanceCounters/processCpuPercentage',
+ * 'performanceCounters/processIOBytesPerSecond',
+ * 'performanceCounters/processPrivateBytes',
+ * 'performanceCounters/processorCpuPercentage',
+ * 'availabilityResults/availabilityPercentage',
+ * 'availabilityResults/duration', 'billing/telemetryCount',
+ * 'customEvents/count'
+ * @member {moment.duration} [timespan]
+ * @member {array} [aggregation]
+ * @member {moment.duration} [interval]
+ * @member {array} [segment]
+ * @member {number} [top]
+ * @member {string} [orderby]
+ * @member {string} [filter]
+ */
+export interface MetricsPostBodySchemaParameters {
+  metricId: string;
+  timespan?: moment.Duration;
+  aggregation?: string[];
+  interval?: moment.Duration;
+  segment?: string[];
+  top?: number;
+  orderby?: string;
+  filter?: string;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the MetricsPostBodySchema class.
+ * @constructor
+ * A metric request
+ *
+ * @member {string} id An identifier for this query.  Must be unique within the
+ * post body of the request.  This identifier will be the 'id' property of the
+ * response object representing this query.
+ * @member {object} parameters The parameters for a single metrics query
+ * @member {string} [parameters.metricId] Possible values include:
+ * 'requests/count', 'requests/duration', 'requests/failed', 'users/count',
+ * 'users/authenticated', 'pageViews/count', 'pageViews/duration',
+ * 'client/processingDuration', 'client/receiveDuration',
+ * 'client/networkDuration', 'client/sendDuration', 'client/totalDuration',
+ * 'dependencies/count', 'dependencies/failed', 'dependencies/duration',
+ * 'exceptions/count', 'exceptions/browser', 'exceptions/server',
+ * 'sessions/count', 'performanceCounters/requestExecutionTime',
+ * 'performanceCounters/requestsPerSecond',
+ * 'performanceCounters/requestsInQueue',
+ * 'performanceCounters/memoryAvailableBytes',
+ * 'performanceCounters/exceptionsPerSecond',
+ * 'performanceCounters/processCpuPercentage',
+ * 'performanceCounters/processIOBytesPerSecond',
+ * 'performanceCounters/processPrivateBytes',
+ * 'performanceCounters/processorCpuPercentage',
+ * 'availabilityResults/availabilityPercentage',
+ * 'availabilityResults/duration', 'billing/telemetryCount',
+ * 'customEvents/count'
+ * @member {moment.duration} [parameters.timespan]
+ * @member {array} [parameters.aggregation]
+ * @member {moment.duration} [parameters.interval]
+ * @member {array} [parameters.segment]
+ * @member {number} [parameters.top]
+ * @member {string} [parameters.orderby]
+ * @member {string} [parameters.filter]
+ */
+export interface MetricsPostBodySchema {
+  id: string;
+  parameters: MetricsPostBodySchemaParameters;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the MetricsSegmentInfo class.
+ * @constructor
+ * A metric segment
+ *
+ * @member {date} [start] Start time of the metric segment (only when an
+ * interval was specified).
+ * @member {date} [end] Start time of the metric segment (only when an interval
+ * was specified).
+ * @member {array} [segments] Segmented metric data (if further segmented).
+ */
+export interface MetricsSegmentInfo {
+  start?: Date;
+  end?: Date;
+  segments?: MetricsSegmentInfo[];
+  /**
+   * @property Describes unknown properties. The value of an unknown property
+   * can be of "any" type.
+   */
+  [property: string]: any;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the MetricsResultInfo class.
+ * @constructor
+ * A metric result data.
+ *
+ * @member {date} [start] Start time of the metric.
+ * @member {date} [end] Start time of the metric.
+ * @member {moment.duration} [interval] The interval used to segment the metric
+ * data.
+ * @member {array} [segments] Segmented metric data (if segmented).
+ */
+export interface MetricsResultInfo {
+  start?: Date;
+  end?: Date;
+  interval?: moment.Duration;
+  segments?: MetricsSegmentInfo[];
+  /**
+   * @property Describes unknown properties. The value of an unknown property
+   * can be of "any" type.
+   */
+  [property: string]: any;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the MetricsResult class.
+ * @constructor
+ * A metric result.
+ *
+ * @member {object} [value]
+ * @member {date} [value.start] Start time of the metric.
+ * @member {date} [value.end] Start time of the metric.
+ * @member {moment.duration} [value.interval] The interval used to segment the
+ * metric data.
+ * @member {array} [value.segments] Segmented metric data (if segmented).
+ */
+export interface MetricsResult {
+  value?: MetricsResultInfo;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the MetricsResultsItem class.
+ * @constructor
+ * @member {string} id The specified ID for this metric.
+ * @member {number} status The HTTP status code of this metric query.
+ * @member {object} body The results of this metric query.
+ * @member {object} [body.value]
+ * @member {date} [body.value.start] Start time of the metric.
+ * @member {date} [body.value.end] Start time of the metric.
+ * @member {moment.duration} [body.value.interval] The interval used to segment
+ * the metric data.
+ * @member {array} [body.value.segments] Segmented metric data (if segmented).
+ */
+export interface MetricsResultsItem {
+  id: string;
+  status: number;
+  body: MetricsResult;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the ErrorDetail class.
+ * @constructor
+ * @summary Error details.
+ *
+ * @member {string} code The error's code.
+ * @member {string} message A human readable error message.
+ * @member {string} [target] Indicates which property in the request is
+ * responsible for the error.
+ * @member {string} [value] Indicates which value in 'target' is responsible
+ * for the error.
+ * @member {array} [resources] Indicates resources which were responsible for
+ * the error.
+ * @member {object} [additionalProperties]
+ */
+export interface ErrorDetail {
+  code: string;
+  message: string;
+  target?: string;
+  value?: string;
+  resources?: string[];
+  additionalProperties?: any;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the ErrorInfo class.
+ * @constructor
+ * @summary The code and message for an error.
+ *
+ * @member {string} code A machine readable error code.
+ * @member {string} message A human readable error message.
+ * @member {array} [details] error details.
+ * @member {object} [innererror] Inner error details if they exist.
+ * @member {object} [additionalProperties]
+ */
+export interface ErrorInfo {
+  code: string;
+  message: string;
+  details?: ErrorDetail[];
+  innererror?: ErrorInfo;
+  additionalProperties?: any;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsResultDataCustomDimensions class.
+ * @constructor
+ * Custom dimensions of the event
+ *
+ * @member {object} [additionalProperties]
+ */
+export interface EventsResultDataCustomDimensions {
+  additionalProperties?: any;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsResultDataCustomMeasurements class.
+ * @constructor
+ * Custom measurements of the event
+ *
+ * @member {object} [additionalProperties]
+ */
+export interface EventsResultDataCustomMeasurements {
+  additionalProperties?: any;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsOperationInfo class.
+ * @constructor
+ * Operation info for an event result
+ *
+ * @member {string} [name] Name of the operation
+ * @member {string} [id] ID of the operation
+ * @member {string} [parentId] Parent ID of the operation
+ * @member {string} [syntheticSource] Synthetic source of the operation
+ */
+export interface EventsOperationInfo {
+  name?: string;
+  id?: string;
+  parentId?: string;
+  syntheticSource?: string;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsSessionInfo class.
+ * @constructor
+ * Session info for an event result
+ *
+ * @member {string} [id] ID of the session
+ */
+export interface EventsSessionInfo {
+  id?: string;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsUserInfo class.
+ * @constructor
+ * User info for an event result
+ *
+ * @member {string} [id] ID of the user
+ * @member {string} [accountId] Account ID of the user
+ * @member {string} [authenticatedId] Authenticated ID of the user
+ */
+export interface EventsUserInfo {
+  id?: string;
+  accountId?: string;
+  authenticatedId?: string;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsCloudInfo class.
+ * @constructor
+ * Cloud info for an event result
+ *
+ * @member {string} [roleName] Role name of the cloud
+ * @member {string} [roleInstance] Role instance of the cloud
+ */
+export interface EventsCloudInfo {
+  roleName?: string;
+  roleInstance?: string;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsAiInfo class.
+ * @constructor
+ * AI related application info for an event result
+ *
+ * @member {string} [iKey] iKey of the app
+ * @member {string} [appName] Name of the application
+ * @member {string} [appId] ID of the application
+ * @member {string} [sdkVersion] SDK version of the application
+ */
+export interface EventsAiInfo {
+  iKey?: string;
+  appName?: string;
+  appId?: string;
+  sdkVersion?: string;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsApplicationInfo class.
+ * @constructor
+ * Application info for an event result
+ *
+ * @member {string} [version] Version of the application
+ */
+export interface EventsApplicationInfo {
+  version?: string;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsClientInfo class.
+ * @constructor
+ * Client info for an event result
+ *
+ * @member {string} [model] Model of the client
+ * @member {string} [os] Operating system of the client
+ * @member {string} [type] Type of the client
+ * @member {string} [browser] Browser of the client
+ * @member {string} [ip] IP address of the client
+ * @member {string} [city] City of the client
+ * @member {string} [stateOrProvince] State or province of the client
+ * @member {string} [countryOrRegion] Country or region of the client
+ */
+export interface EventsClientInfo {
+  model?: string;
+  os?: string;
+  type?: string;
+  browser?: string;
+  ip?: string;
+  city?: string;
+  stateOrProvince?: string;
+  countryOrRegion?: string;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsResultData class.
+ * @constructor
+ * Events query result data.
+ *
+ * @member {string} [id] The unique ID for this event.
+ * @member {number} [count] Count of the event
+ * @member {date} [timestamp] Timestamp of the event
+ * @member {object} [customDimensions] Custom dimensions of the event
+ * @member {object} [customDimensions.additionalProperties]
+ * @member {object} [customMeasurements] Custom measurements of the event
+ * @member {object} [customMeasurements.additionalProperties]
+ * @member {object} [operation] Operation info of the event
+ * @member {string} [operation.name] Name of the operation
+ * @member {string} [operation.id] ID of the operation
+ * @member {string} [operation.parentId] Parent ID of the operation
+ * @member {string} [operation.syntheticSource] Synthetic source of the
+ * operation
+ * @member {object} [session] Session info of the event
+ * @member {string} [session.id] ID of the session
+ * @member {object} [user] User info of the event
+ * @member {string} [user.id] ID of the user
+ * @member {string} [user.accountId] Account ID of the user
+ * @member {string} [user.authenticatedId] Authenticated ID of the user
+ * @member {object} [cloud] Cloud info of the event
+ * @member {string} [cloud.roleName] Role name of the cloud
+ * @member {string} [cloud.roleInstance] Role instance of the cloud
+ * @member {object} [ai] AI info of the event
+ * @member {string} [ai.iKey] iKey of the app
+ * @member {string} [ai.appName] Name of the application
+ * @member {string} [ai.appId] ID of the application
+ * @member {string} [ai.sdkVersion] SDK version of the application
+ * @member {object} [application] Application info of the event
+ * @member {string} [application.version] Version of the application
+ * @member {object} [client] Client info of the event
+ * @member {string} [client.model] Model of the client
+ * @member {string} [client.os] Operating system of the client
+ * @member {string} [client.type] Type of the client
+ * @member {string} [client.browser] Browser of the client
+ * @member {string} [client.ip] IP address of the client
+ * @member {string} [client.city] City of the client
+ * @member {string} [client.stateOrProvince] State or province of the client
+ * @member {string} [client.countryOrRegion] Country or region of the client
+ * @member {string} type Polymorphic Discriminator
+ */
+export interface EventsResultData {
+  id?: string;
+  count?: number;
+  timestamp?: Date;
+  customDimensions?: EventsResultDataCustomDimensions;
+  customMeasurements?: EventsResultDataCustomMeasurements;
+  operation?: EventsOperationInfo;
+  session?: EventsSessionInfo;
+  user?: EventsUserInfo;
+  cloud?: EventsCloudInfo;
+  ai?: EventsAiInfo;
+  application?: EventsApplicationInfo;
+  client?: EventsClientInfo;
+  type: string;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsResults class.
+ * @constructor
+ * An events query result.
+ *
+ * @member {string} [odatacontext] OData context metadata endpoint for this
+ * response
+ * @member {array} [aimessages] OData messages for this response.
+ * @member {array} [value] Contents of the events query result.
+ */
+export interface EventsResults {
+  odatacontext?: string;
+  aimessages?: ErrorInfo[];
+  value?: EventsResultData[];
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsResult class.
+ * @constructor
+ * An event query result.
+ *
+ * @member {array} [aimessages] OData messages for this response.
+ * @member {object} [value]
+ * @member {string} [value.id] The unique ID for this event.
+ * @member {number} [value.count] Count of the event
+ * @member {date} [value.timestamp] Timestamp of the event
+ * @member {object} [value.customDimensions] Custom dimensions of the event
+ * @member {object} [value.customDimensions.additionalProperties]
+ * @member {object} [value.customMeasurements] Custom measurements of the event
+ * @member {object} [value.customMeasurements.additionalProperties]
+ * @member {object} [value.operation] Operation info of the event
+ * @member {string} [value.operation.name] Name of the operation
+ * @member {string} [value.operation.id] ID of the operation
+ * @member {string} [value.operation.parentId] Parent ID of the operation
+ * @member {string} [value.operation.syntheticSource] Synthetic source of the
+ * operation
+ * @member {object} [value.session] Session info of the event
+ * @member {string} [value.session.id] ID of the session
+ * @member {object} [value.user] User info of the event
+ * @member {string} [value.user.id] ID of the user
+ * @member {string} [value.user.accountId] Account ID of the user
+ * @member {string} [value.user.authenticatedId] Authenticated ID of the user
+ * @member {object} [value.cloud] Cloud info of the event
+ * @member {string} [value.cloud.roleName] Role name of the cloud
+ * @member {string} [value.cloud.roleInstance] Role instance of the cloud
+ * @member {object} [value.ai] AI info of the event
+ * @member {string} [value.ai.iKey] iKey of the app
+ * @member {string} [value.ai.appName] Name of the application
+ * @member {string} [value.ai.appId] ID of the application
+ * @member {string} [value.ai.sdkVersion] SDK version of the application
+ * @member {object} [value.application] Application info of the event
+ * @member {string} [value.application.version] Version of the application
+ * @member {object} [value.client] Client info of the event
+ * @member {string} [value.client.model] Model of the client
+ * @member {string} [value.client.os] Operating system of the client
+ * @member {string} [value.client.type] Type of the client
+ * @member {string} [value.client.browser] Browser of the client
+ * @member {string} [value.client.ip] IP address of the client
+ * @member {string} [value.client.city] City of the client
+ * @member {string} [value.client.stateOrProvince] State or province of the
+ * client
+ * @member {string} [value.client.countryOrRegion] Country or region of the
+ * client
+ * @member {string} [value.type] Polymorphic Discriminator
+ */
+export interface EventsResult {
+  aimessages?: ErrorInfo[];
+  value?: EventsResultData;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsTraceInfo class.
+ * @constructor
+ * The trace information
+ *
+ * @member {string} [message] The trace message
+ * @member {number} [severityLevel] The trace severity level
+ */
+export interface EventsTraceInfo {
+  message?: string;
+  severityLevel?: number;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsTraceResult class.
+ * @constructor
+ * A trace result
+ *
+ * @member {object} [trace]
+ * @member {string} [trace.message] The trace message
+ * @member {number} [trace.severityLevel] The trace severity level
+ */
+export interface EventsTraceResult extends EventsResultData {
+  trace?: EventsTraceInfo;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsCustomEventInfo class.
+ * @constructor
+ * The custom event information
+ *
+ * @member {string} [name] The name of the custom event
+ */
+export interface EventsCustomEventInfo {
+  name?: string;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsCustomEventResult class.
+ * @constructor
+ * A custom event result
+ *
+ * @member {object} [customEvent]
+ * @member {string} [customEvent.name] The name of the custom event
+ */
+export interface EventsCustomEventResult extends EventsResultData {
+  customEvent?: EventsCustomEventInfo;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsPageViewInfo class.
+ * @constructor
+ * The page view information
+ *
+ * @member {string} [name] The name of the page
+ * @member {string} [url] The URL of the page
+ * @member {string} [duration] The duration of the page view
+ * @member {string} [performanceBucket] The performance bucket of the page view
+ */
+export interface EventsPageViewInfo {
+  name?: string;
+  url?: string;
+  duration?: string;
+  performanceBucket?: string;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsPageViewResult class.
+ * @constructor
+ * A page view result
+ *
+ * @member {object} [pageView]
+ * @member {string} [pageView.name] The name of the page
+ * @member {string} [pageView.url] The URL of the page
+ * @member {string} [pageView.duration] The duration of the page view
+ * @member {string} [pageView.performanceBucket] The performance bucket of the
+ * page view
+ */
+export interface EventsPageViewResult extends EventsResultData {
+  pageView?: EventsPageViewInfo;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsBrowserTimingInfo class.
+ * @constructor
+ * The browser timing information
+ *
+ * @member {string} [urlPath] The path of the URL
+ * @member {string} [urlHost] The host of the URL
+ * @member {string} [name] The name of the page
+ * @member {string} [url] The url of the page
+ * @member {number} [totalDuration] The total duration of the load
+ * @member {string} [performanceBucket] The performance bucket of the load
+ * @member {number} [networkDuration] The network duration of the load
+ * @member {number} [sendDuration] The send duration of the load
+ * @member {number} [receiveDuration] The receive duration of the load
+ * @member {number} [processingDuration] The processing duration of the load
+ */
+export interface EventsBrowserTimingInfo {
+  urlPath?: string;
+  urlHost?: string;
+  name?: string;
+  url?: string;
+  totalDuration?: number;
+  performanceBucket?: string;
+  networkDuration?: number;
+  sendDuration?: number;
+  receiveDuration?: number;
+  processingDuration?: number;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsClientPerformanceInfo class.
+ * @constructor
+ * Client performance information
+ *
+ * @member {string} [name] The name of the client performance
+ */
+export interface EventsClientPerformanceInfo {
+  name?: string;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsBrowserTimingResult class.
+ * @constructor
+ * A browser timing result
+ *
+ * @member {object} [browserTiming]
+ * @member {string} [browserTiming.urlPath] The path of the URL
+ * @member {string} [browserTiming.urlHost] The host of the URL
+ * @member {string} [browserTiming.name] The name of the page
+ * @member {string} [browserTiming.url] The url of the page
+ * @member {number} [browserTiming.totalDuration] The total duration of the
+ * load
+ * @member {string} [browserTiming.performanceBucket] The performance bucket of
+ * the load
+ * @member {number} [browserTiming.networkDuration] The network duration of the
+ * load
+ * @member {number} [browserTiming.sendDuration] The send duration of the load
+ * @member {number} [browserTiming.receiveDuration] The receive duration of the
+ * load
+ * @member {number} [browserTiming.processingDuration] The processing duration
+ * of the load
+ * @member {object} [clientPerformance]
+ * @member {string} [clientPerformance.name] The name of the client performance
+ */
+export interface EventsBrowserTimingResult extends EventsResultData {
+  browserTiming?: EventsBrowserTimingInfo;
+  clientPerformance?: EventsClientPerformanceInfo;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsRequestInfo class.
+ * @constructor
+ * The request info
+ *
+ * @member {string} [name] The name of the request
+ * @member {string} [url] The URL of the request
+ * @member {string} [success] Indicates if the request was successful
+ * @member {number} [duration] The duration of the request
+ * @member {string} [performanceBucket] The performance bucket of the request
+ * @member {string} [resultCode] The result code of the request
+ * @member {string} [source] The source of the request
+ * @member {string} [id] The ID of the request
+ */
+export interface EventsRequestInfo {
+  name?: string;
+  url?: string;
+  success?: string;
+  duration?: number;
+  performanceBucket?: string;
+  resultCode?: string;
+  source?: string;
+  id?: string;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsRequestResult class.
+ * @constructor
+ * A request result
+ *
+ * @member {object} [request]
+ * @member {string} [request.name] The name of the request
+ * @member {string} [request.url] The URL of the request
+ * @member {string} [request.success] Indicates if the request was successful
+ * @member {number} [request.duration] The duration of the request
+ * @member {string} [request.performanceBucket] The performance bucket of the
+ * request
+ * @member {string} [request.resultCode] The result code of the request
+ * @member {string} [request.source] The source of the request
+ * @member {string} [request.id] The ID of the request
+ */
+export interface EventsRequestResult extends EventsResultData {
+  request?: EventsRequestInfo;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsDependencyInfo class.
+ * @constructor
+ * The dependency info
+ *
+ * @member {string} [target] The target of the dependency
+ * @member {string} [data] The data of the dependency
+ * @member {string} [success] Indicates if the dependency was successful
+ * @member {number} [duration] The duration of the dependency
+ * @member {string} [performanceBucket] The performance bucket of the
+ * dependency
+ * @member {string} [resultCode] The result code of the dependency
+ * @member {string} [type] The type of the dependency
+ * @member {string} [name] The name of the dependency
+ * @member {string} [id] The ID of the dependency
+ */
+export interface EventsDependencyInfo {
+  target?: string;
+  data?: string;
+  success?: string;
+  duration?: number;
+  performanceBucket?: string;
+  resultCode?: string;
+  type?: string;
+  name?: string;
+  id?: string;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsDependencyResult class.
+ * @constructor
+ * A dependency result
+ *
+ * @member {object} [dependency]
+ * @member {string} [dependency.target] The target of the dependency
+ * @member {string} [dependency.data] The data of the dependency
+ * @member {string} [dependency.success] Indicates if the dependency was
+ * successful
+ * @member {number} [dependency.duration] The duration of the dependency
+ * @member {string} [dependency.performanceBucket] The performance bucket of
+ * the dependency
+ * @member {string} [dependency.resultCode] The result code of the dependency
+ * @member {string} [dependency.type] The type of the dependency
+ * @member {string} [dependency.name] The name of the dependency
+ * @member {string} [dependency.id] The ID of the dependency
+ */
+export interface EventsDependencyResult extends EventsResultData {
+  dependency?: EventsDependencyInfo;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsExceptionDetailsParsedStack class.
+ * @constructor
+ * A parsed stack entry
+ *
+ * @member {string} [assembly] The assembly of the stack entry
+ * @member {string} [method] The method of the stack entry
+ * @member {number} [level] The level of the stack entry
+ * @member {number} [line] The line of the stack entry
+ */
+export interface EventsExceptionDetailsParsedStack {
+  assembly?: string;
+  method?: string;
+  level?: number;
+  line?: number;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsExceptionDetail class.
+ * @constructor
+ * Exception details
+ *
+ * @member {string} [severityLevel] The severity level of the exception detail
+ * @member {string} [outerId] The outer ID of the exception detail
+ * @member {string} [message] The message of the exception detail
+ * @member {string} [type] The type of the exception detail
+ * @member {string} [id] The ID of the exception detail
+ * @member {array} [parsedStack] The parsed stack
+ */
+export interface EventsExceptionDetail {
+  severityLevel?: string;
+  outerId?: string;
+  message?: string;
+  type?: string;
+  id?: string;
+  parsedStack?: EventsExceptionDetailsParsedStack[];
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsExceptionInfo class.
+ * @constructor
+ * The exception info
+ *
+ * @member {number} [severityLevel] The severity level of the exception
+ * @member {string} [problemId] The problem ID of the exception
+ * @member {string} [handledAt] Indicates where the exception was handled at
+ * @member {string} [assembly] The assembly which threw the exception
+ * @member {string} [method] The method that threw the exception
+ * @member {string} [message] The message of the exception
+ * @member {string} [type] The type of the exception
+ * @member {string} [outerType] The outer type of the exception
+ * @member {string} [outerMethod] The outer method of the exception
+ * @member {string} [outerAssembly] The outer assmebly of the exception
+ * @member {string} [outerMessage] The outer message of the exception
+ * @member {string} [innermostType] The inner most type of the exception
+ * @member {string} [innermostMessage] The inner most message of the exception
+ * @member {string} [innermostMethod] The inner most method of the exception
+ * @member {string} [innermostAssembly] The inner most assembly of the
+ * exception
+ * @member {array} [details] The details of the exception
+ */
+export interface EventsExceptionInfo {
+  severityLevel?: number;
+  problemId?: string;
+  handledAt?: string;
+  assembly?: string;
+  method?: string;
+  message?: string;
+  type?: string;
+  outerType?: string;
+  outerMethod?: string;
+  outerAssembly?: string;
+  outerMessage?: string;
+  innermostType?: string;
+  innermostMessage?: string;
+  innermostMethod?: string;
+  innermostAssembly?: string;
+  details?: EventsExceptionDetail[];
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsExceptionResult class.
+ * @constructor
+ * An exception result
+ *
+ * @member {object} [exception]
+ * @member {number} [exception.severityLevel] The severity level of the
+ * exception
+ * @member {string} [exception.problemId] The problem ID of the exception
+ * @member {string} [exception.handledAt] Indicates where the exception was
+ * handled at
+ * @member {string} [exception.assembly] The assembly which threw the exception
+ * @member {string} [exception.method] The method that threw the exception
+ * @member {string} [exception.message] The message of the exception
+ * @member {string} [exception.type] The type of the exception
+ * @member {string} [exception.outerType] The outer type of the exception
+ * @member {string} [exception.outerMethod] The outer method of the exception
+ * @member {string} [exception.outerAssembly] The outer assmebly of the
+ * exception
+ * @member {string} [exception.outerMessage] The outer message of the exception
+ * @member {string} [exception.innermostType] The inner most type of the
+ * exception
+ * @member {string} [exception.innermostMessage] The inner most message of the
+ * exception
+ * @member {string} [exception.innermostMethod] The inner most method of the
+ * exception
+ * @member {string} [exception.innermostAssembly] The inner most assembly of
+ * the exception
+ * @member {array} [exception.details] The details of the exception
+ */
+export interface EventsExceptionResult extends EventsResultData {
+  exception?: EventsExceptionInfo;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsAvailabilityResultInfo class.
+ * @constructor
+ * The availability result info
+ *
+ * @member {string} [name] The name of the availability result
+ * @member {string} [success] Indicates if the availability result was
+ * successful
+ * @member {number} [duration] The duration of the availability result
+ * @member {string} [performanceBucket] The performance bucket of the
+ * availability result
+ * @member {string} [message] The message of the availability result
+ * @member {string} [location] The location of the availability result
+ * @member {string} [id] The ID of the availability result
+ * @member {string} [size] The size of the availability result
+ */
+export interface EventsAvailabilityResultInfo {
+  name?: string;
+  success?: string;
+  duration?: number;
+  performanceBucket?: string;
+  message?: string;
+  location?: string;
+  id?: string;
+  size?: string;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsAvailabilityResultResult class.
+ * @constructor
+ * An availability result result
+ *
+ * @member {object} [availabilityResult]
+ * @member {string} [availabilityResult.name] The name of the availability
+ * result
+ * @member {string} [availabilityResult.success] Indicates if the availability
+ * result was successful
+ * @member {number} [availabilityResult.duration] The duration of the
+ * availability result
+ * @member {string} [availabilityResult.performanceBucket] The performance
+ * bucket of the availability result
+ * @member {string} [availabilityResult.message] The message of the
+ * availability result
+ * @member {string} [availabilityResult.location] The location of the
+ * availability result
+ * @member {string} [availabilityResult.id] The ID of the availability result
+ * @member {string} [availabilityResult.size] The size of the availability
+ * result
+ */
+export interface EventsAvailabilityResultResult extends EventsResultData {
+  availabilityResult?: EventsAvailabilityResultInfo;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsPerformanceCounterInfo class.
+ * @constructor
+ * The performance counter info
+ *
+ * @member {number} [value] The value of the performance counter
+ * @member {string} [name] The name of the performance counter
+ * @member {string} [category] The category of the performance counter
+ * @member {string} [counter] The counter of the performance counter
+ * @member {string} [instanceName] The instance name of the performance counter
+ * @member {string} [instance] The instance of the performance counter
+ */
+export interface EventsPerformanceCounterInfo {
+  value?: number;
+  name?: string;
+  category?: string;
+  counter?: string;
+  instanceName?: string;
+  instance?: string;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsPerformanceCounterResult class.
+ * @constructor
+ * A performance counter result
+ *
+ * @member {object} [performanceCounter]
+ * @member {number} [performanceCounter.value] The value of the performance
+ * counter
+ * @member {string} [performanceCounter.name] The name of the performance
+ * counter
+ * @member {string} [performanceCounter.category] The category of the
+ * performance counter
+ * @member {string} [performanceCounter.counter] The counter of the performance
+ * counter
+ * @member {string} [performanceCounter.instanceName] The instance name of the
+ * performance counter
+ * @member {string} [performanceCounter.instance] The instance of the
+ * performance counter
+ */
+export interface EventsPerformanceCounterResult extends EventsResultData {
+  performanceCounter?: EventsPerformanceCounterInfo;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsCustomMetricInfo class.
+ * @constructor
+ * The custom metric info
+ *
+ * @member {string} [name] The name of the custom metric
+ * @member {number} [value] The value of the custom metric
+ * @member {number} [valueSum] The sum of the custom metric
+ * @member {number} [valueCount] The count of the custom metric
+ * @member {number} [valueMin] The minimum value of the custom metric
+ * @member {number} [valueMax] The maximum value of the custom metric
+ * @member {number} [valueStdDev] The standard deviation of the custom metric
+ */
+export interface EventsCustomMetricInfo {
+  name?: string;
+  value?: number;
+  valueSum?: number;
+  valueCount?: number;
+  valueMin?: number;
+  valueMax?: number;
+  valueStdDev?: number;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the EventsCustomMetricResult class.
+ * @constructor
+ * A custom metric result
+ *
+ * @member {object} [customMetric]
+ * @member {string} [customMetric.name] The name of the custom metric
+ * @member {number} [customMetric.value] The value of the custom metric
+ * @member {number} [customMetric.valueSum] The sum of the custom metric
+ * @member {number} [customMetric.valueCount] The count of the custom metric
+ * @member {number} [customMetric.valueMin] The minimum value of the custom
+ * metric
+ * @member {number} [customMetric.valueMax] The maximum value of the custom
+ * metric
+ * @member {number} [customMetric.valueStdDev] The standard deviation of the
+ * custom metric
+ */
+export interface EventsCustomMetricResult extends EventsResultData {
+  customMetric?: EventsCustomMetricInfo;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the QueryBody class.
+ * @constructor
+ * Query request body
+ *
+ * @member {string} query The query to execute.
+ * @member {moment.duration} [timespan] Optional. The timespan over which to
+ * query data. This is an ISO8601 time period value.  This timespan is applied
+ * in addition to any that are specified in the query expression.
+ * @member {array} [applications] A list of applications that are included in
+ * the query.
+ */
+export interface QueryBody {
+  query: string;
+  timespan?: moment.Duration;
+  applications?: string[];
+}
+
+/**
+ * @class
+ * Initializes a new instance of the Column class.
+ * @constructor
+ * @summary A table column.
+ *
+ * A column in a table.
+ *
+ * @member {string} [name] The name of this column.
+ * @member {string} [type] The data type of this column.
+ */
+export interface Column {
+  name?: string;
+  type?: string;
+}
+
+/**
+ * @class
+ * Initializes a new instance of the Table class.
+ * @constructor
+ * @summary A query response table.
+ *
+ * Contains the columns and rows for one table in a query response.
+ *
+ * @member {string} name The name of the table.
+ * @member {array} columns The list of columns in this table.
+ * @member {array} rows The resulting rows from this query.
+ */
+export interface Table {
+  name: string;
+  columns: Column[];
+  rows: string[][];
+}
+
+/**
+ * @class
+ * Initializes a new instance of the QueryResults class.
+ * @constructor
+ * @summary A query response.
+ *
+ * Contains the tables, columns & rows resulting from a query.
+ *
+ * @member {array} tables The list of tables, columns and rows.
+ */
+export interface QueryResults {
+  tables: Table[];
+}
+
+/**
+ * @class
  * Initializes a new instance of the ErrorResponse class.
  * @constructor
- * Error reponse indicates Insights service is not able to process the incoming
- * request. The reason is provided in the error message.
+ * @summary Error details.
  *
- * @member {string} [code] Error code.
- * @member {string} [message] Error message indicating why the operation
- * failed.
+ * Contains details when the response code indicates an error.
+ *
+ * @member {object} error The error details.
+ * @member {string} [error.code] A machine readable error code.
+ * @member {string} [error.message] A human readable error message.
+ * @member {array} [error.details] error details.
+ * @member {object} [error.innererror] Inner error details if they exist.
+ * @member {object} [error.additionalProperties]
  */
 export interface ErrorResponse {
-  code?: string;
-  message?: string;
+  error: ErrorInfo;
 }
 
-/**
- * @class
- * Initializes a new instance of the OperationDisplay class.
- * @constructor
- * The object that represents the operation.
- *
- * @member {string} [provider] Service provider: Microsoft.Cdn
- * @member {string} [resource] Resource on which the operation is performed:
- * Profile, endpoint, etc.
- * @member {string} [operation] Operation type: Read, write, delete, etc.
- */
-export interface OperationDisplay {
-  provider?: string;
-  resource?: string;
-  operation?: string;
-}
-
-/**
- * @class
- * Initializes a new instance of the Operation class.
- * @constructor
- * CDN REST API operation
- *
- * @member {string} [name] Operation name: {provider}/{resource}/{operation}
- * @member {object} [display] The object that represents the operation.
- * @member {string} [display.provider] Service provider: Microsoft.Cdn
- * @member {string} [display.resource] Resource on which the operation is
- * performed: Profile, endpoint, etc.
- * @member {string} [display.operation] Operation type: Read, write, delete,
- * etc.
- */
-export interface Operation {
-  name?: string;
-  display?: OperationDisplay;
-}
-
-/**
- * @class
- * Initializes a new instance of the Resource class.
- * @constructor
- * An azure resource object
- *
- * @member {string} [id] Azure resource Id
- * @member {string} [name] Azure resource name
- * @member {string} [type] Azure resource type
- * @member {string} location Resource location
- * @member {object} [tags] Resource tags
- */
-export interface Resource extends BaseResource {
-  readonly id?: string;
-  readonly name?: string;
-  readonly type?: string;
-  location: string;
-  tags?: { [propertyName: string]: string };
-}
-
-/**
- * @class
- * Initializes a new instance of the TagsResource class.
- * @constructor
- * A container holding only the Tags for a resource, allowing the user to
- * update the tags on a WebTest instance.
- *
- * @member {object} [tags] Resource tags
- */
-export interface TagsResource {
-  tags?: { [propertyName: string]: string };
-}
-
-/**
- * @class
- * Initializes a new instance of the ApplicationInsightsComponent class.
- * @constructor
- * An Application Insights component definition.
- *
- * @member {string} kind The kind of application that this component refers to,
- * used to customize UI. This value is a freeform string, values should
- * typically be one of the following: web, ios, other, store, java, phone.
- * @member {string} [applicationId] The unique ID of your application. This
- * field mirrors the 'Name' field and cannot be changed.
- * @member {string} [appId] Application Insights Unique ID for your
- * Application.
- * @member {string} applicationType Type of application being monitored.
- * Possible values include: 'web', 'other'. Default value: 'web' .
- * @member {string} [flowType] Used by the Application Insights system to
- * determine what kind of flow this component was created by. This is to be set
- * to 'Bluefield' when creating/updating a component via the REST API. Possible
- * values include: 'Bluefield'. Default value: 'Bluefield' .
- * @member {string} [requestSource] Describes what tool created this
- * Application Insights component. Customers using this API should set this to
- * the default 'rest'. Possible values include: 'rest'. Default value: 'rest' .
- * @member {string} [instrumentationKey] Application Insights Instrumentation
- * key. A read-only value that applications can use to identify the destination
- * for all telemetry sent to Azure Application Insights. This value will be
- * supplied upon construction of each new Application Insights component.
- * @member {date} [creationDate] Creation Date for the Application Insights
- * component, in ISO 8601 format.
- * @member {string} [tenantId] Azure Tenant Id.
- * @member {string} [hockeyAppId] The unique application ID created when a new
- * application is added to HockeyApp, used for communications with HockeyApp.
- * @member {string} [hockeyAppToken] Token used to authenticate communications
- * with between Application Insights and HockeyApp.
- * @member {string} [provisioningState] Current state of this component:
- * whether or not is has been provisioned within the resource group it is
- * defined. Users cannot change this value but are able to read from it. Values
- * will include Succeeded, Deploying, Canceled, and Failed.
- * @member {number} [samplingPercentage] Percentage of the data produced by the
- * application being monitored that is being sampled for Application Insights
- * telemetry.
- */
-export interface ApplicationInsightsComponent extends Resource {
-  kind: string;
-  readonly applicationId?: string;
-  readonly appId?: string;
-  applicationType: string;
-  flowType?: string;
-  requestSource?: string;
-  readonly instrumentationKey?: string;
-  readonly creationDate?: Date;
-  readonly tenantId?: string;
-  hockeyAppId?: string;
-  readonly hockeyAppToken?: string;
-  readonly provisioningState?: string;
-  samplingPercentage?: number;
-}
-
-/**
- * @class
- * Initializes a new instance of the WebTestGeolocation class.
- * @constructor
- * Geo-physical location to run a web test from. You must specify one or more
- * locations for the test to run from.
- *
- * @member {string} [location] Location ID for the webtest to run from.
- */
-export interface WebTestGeolocation {
-  location?: string;
-}
-
-/**
- * @class
- * Initializes a new instance of the WebTestPropertiesConfiguration class.
- * @constructor
- * An XML configuration specification for a WebTest.
- *
- * @member {string} [webTest] The XML specification of a WebTest to run against
- * an application.
- */
-export interface WebTestPropertiesConfiguration {
-  webTest?: string;
-}
-
-/**
- * @class
- * Initializes a new instance of the WebTest class.
- * @constructor
- * An Application Insights web test definition.
- *
- * @member {string} [kind] The kind of web test that this web test watches.
- * Choices are ping and multistep. Possible values include: 'ping',
- * 'multistep'. Default value: 'ping' .
- * @member {string} syntheticMonitorId Unique ID of this WebTest. This is
- * typically the same value as the Name field.
- * @member {string} webTestName User defined name if this WebTest.
- * @member {string} [description] Purpose/user defined descriptive test for
- * this WebTest.
- * @member {boolean} [enabled] Is the test actively being monitored.
- * @member {number} [frequency] Interval in seconds between test runs for this
- * WebTest. Default value is 300. Default value: 300 .
- * @member {number} [timeout] Seconds until this WebTest will timeout and fail.
- * Default value is 30. Default value: 30 .
- * @member {string} webTestKind The kind of web test this is, valid choices are
- * ping and multistep. Possible values include: 'ping', 'multistep'. Default
- * value: 'ping' .
- * @member {boolean} [retryEnabled] Allow for retries should this WebTest fail.
- * @member {array} locations A list of where to physically run the tests from
- * to give global coverage for accessibility of your application.
- * @member {object} [configuration] An XML configuration specification for a
- * WebTest.
- * @member {string} [configuration.webTest] The XML specification of a WebTest
- * to run against an application.
- * @member {string} [provisioningState] Current state of this component,
- * whether or not is has been provisioned within the resource group it is
- * defined. Users cannot change this value but are able to read from it. Values
- * will include Succeeded, Deploying, Canceled, and Failed.
- */
-export interface WebTest extends Resource {
-  kind?: string;
-  syntheticMonitorId: string;
-  webTestName: string;
-  description?: string;
-  enabled?: boolean;
-  frequency?: number;
-  timeout?: number;
-  webTestKind: string;
-  retryEnabled?: boolean;
-  locations: WebTestGeolocation[];
-  configuration?: WebTestPropertiesConfiguration;
-  readonly provisioningState?: string;
-}
-
-/**
- * @class
- * Initializes a new instance of the ApplicationInsightsComponentExportRequest class.
- * @constructor
- * An Application Insights component Continuous Export configuration request
- * definition.
- *
- * @member {string} [recordTypes] The document types to be exported, as comma
- * separated values. Allowed values include 'Requests', 'Event', 'Exceptions',
- * 'Metrics', 'PageViews', 'PageViewPerformance', 'Rdd', 'PerformanceCounters',
- * 'Availability', 'Messages'.
- * @member {string} [destinationType] The Continuous Export destination type.
- * This has to be 'Blob'.
- * @member {string} [destinationAddress] The SAS URL for the destination
- * storage container. It must grant write permission.
- * @member {string} [isEnabled] Set to 'true' to create a Continuous Export
- * configuration as enabled, otherwise set it to 'false'.
- * @member {string} [notificationQueueEnabled] Deprecated
- * @member {string} [notificationQueueUri] Deprecated
- * @member {string} [destinationStorageSubscriptionId] The subscription ID of
- * the destination storage container.
- * @member {string} [destinationStorageLocationId] The location ID of the
- * destination storage container.
- * @member {string} [destinationAccountId] The name of destination storage
- * account.
- */
-export interface ApplicationInsightsComponentExportRequest {
-  recordTypes?: string;
-  destinationType?: string;
-  destinationAddress?: string;
-  isEnabled?: string;
-  notificationQueueEnabled?: string;
-  notificationQueueUri?: string;
-  destinationStorageSubscriptionId?: string;
-  destinationStorageLocationId?: string;
-  destinationAccountId?: string;
-}
-
-/**
- * @class
- * Initializes a new instance of the ApplicationInsightsComponentExportConfiguration class.
- * @constructor
- * Properties that define a Continuous Export configuration.
- *
- * @member {string} [exportId] The unique ID of the export configuration inside
- * an Applciation Insights component. It is auto generated when the Continuous
- * Export configuration is created.
- * @member {string} [instrumentationKey] The instrumentation key of the
- * Application Insights component.
- * @member {string} [recordTypes] This comma separated list of document types
- * that will be exported. The possible values include 'Requests', 'Event',
- * 'Exceptions', 'Metrics', 'PageViews', 'PageViewPerformance', 'Rdd',
- * 'PerformanceCounters', 'Availability', 'Messages'.
- * @member {string} [applicationName] The name of the Application Insights
- * component.
- * @member {string} [subscriptionId] The subscription of the Application
- * Insights component.
- * @member {string} [resourceGroup] The resource group of the Application
- * Insights component.
- * @member {string} [destinationStorageSubscriptionId] The destination storage
- * account subscription ID.
- * @member {string} [destinationStorageLocationId] The destination account
- * location ID.
- * @member {string} [destinationAccountId] The name of destination account.
- * @member {string} [destinationType] The destination type.
- * @member {string} [isUserEnabled] This will be 'true' if the Continuous
- * Export configuration is enabled, otherwise it will be 'false'.
- * @member {string} [lastUserUpdate] Last time the Continuous Export
- * configuration was updated.
- * @member {string} [notificationQueueEnabled] Deprecated
- * @member {string} [exportStatus] This indicates current Continuous Export
- * configuration status. The possible values are 'Preparing', 'Success',
- * 'Failure'.
- * @member {string} [lastSuccessTime] The last time data was successfully
- * delivered to the destination storage container for this Continuous Export
- * configuration.
- * @member {string} [lastGapTime] The last time the Continuous Export
- * configuration started failing.
- * @member {string} [permanentErrorReason] This is the reason the Continuous
- * Export configuration started failing. It can be 'AzureStorageNotFound' or
- * 'AzureStorageAccessDenied'.
- * @member {string} [storageName] The name of the destination storage account.
- * @member {string} [containerName] The name of the destination storage
- * container.
- */
-export interface ApplicationInsightsComponentExportConfiguration {
-  readonly exportId?: string;
-  readonly instrumentationKey?: string;
-  recordTypes?: string;
-  readonly applicationName?: string;
-  readonly subscriptionId?: string;
-  readonly resourceGroup?: string;
-  readonly destinationStorageSubscriptionId?: string;
-  readonly destinationStorageLocationId?: string;
-  readonly destinationAccountId?: string;
-  readonly destinationType?: string;
-  readonly isUserEnabled?: string;
-  readonly lastUserUpdate?: string;
-  notificationQueueEnabled?: string;
-  readonly exportStatus?: string;
-  readonly lastSuccessTime?: string;
-  readonly lastGapTime?: string;
-  readonly permanentErrorReason?: string;
-  readonly storageName?: string;
-  readonly containerName?: string;
-}
-
-/**
- * @class
- * Initializes a new instance of the ApplicationInsightsComponentDataVolumeCap class.
- * @constructor
- * An Application Insights component daily data volumne cap
- *
- * @member {number} [cap] Daily data volume cap in GB.
- * @member {number} [resetTime] Daily data volume cap UTC reset hour.
- * @member {number} [warningThreshold] Reserved, not used for now.
- * @member {boolean} [stopSendNotificationWhenHitThreshold] Reserved, not used
- * for now.
- * @member {boolean} [stopSendNotificationWhenHitCap] Do not send a
- * notification email when the daily data volume cap is met.
- * @member {number} [maxHistoryCap] Maximum daily data volume cap that the user
- * can set for this component.
- */
-export interface ApplicationInsightsComponentDataVolumeCap {
-  cap?: number;
-  readonly resetTime?: number;
-  warningThreshold?: number;
-  stopSendNotificationWhenHitThreshold?: boolean;
-  stopSendNotificationWhenHitCap?: boolean;
-  readonly maxHistoryCap?: number;
-}
-
-/**
- * @class
- * Initializes a new instance of the ApplicationInsightsComponentBillingFeatures class.
- * @constructor
- * An Application Insights component billing features
- *
- * @member {object} [dataVolumeCap] An Application Insights component daily
- * data volumne cap
- * @member {number} [dataVolumeCap.cap] Daily data volume cap in GB.
- * @member {number} [dataVolumeCap.resetTime] Daily data volume cap UTC reset
- * hour.
- * @member {number} [dataVolumeCap.warningThreshold] Reserved, not used for
- * now.
- * @member {boolean} [dataVolumeCap.stopSendNotificationWhenHitThreshold]
- * Reserved, not used for now.
- * @member {boolean} [dataVolumeCap.stopSendNotificationWhenHitCap] Do not send
- * a notification email when the daily data volume cap is met.
- * @member {number} [dataVolumeCap.maxHistoryCap] Maximum daily data volume cap
- * that the user can set for this component.
- * @member {array} [currentBillingFeatures] Current enabled pricing plan. When
- * the component is in the Enterprise plan, this will list both 'Basic' and
- * 'Application Insights Enterprise'.
- */
-export interface ApplicationInsightsComponentBillingFeatures {
-  dataVolumeCap?: ApplicationInsightsComponentDataVolumeCap;
-  currentBillingFeatures?: string[];
-}
-
-/**
- * @class
- * Initializes a new instance of the ApplicationInsightsComponentQuotaStatus class.
- * @constructor
- * An Application Insights component daily data volume cap status
- *
- * @member {string} [appId] The Application ID for the Application Insights
- * component.
- * @member {boolean} [shouldBeThrottled] The daily data volume cap is met, and
- * data ingestion will be stopped.
- * @member {string} [expirationTime] Date and time when the daily data volume
- * cap will be reset, and data ingestion will resume.
- */
-export interface ApplicationInsightsComponentQuotaStatus {
-  readonly appId?: string;
-  readonly shouldBeThrottled?: boolean;
-  readonly expirationTime?: string;
-}
-
-/**
- * @class
- * Initializes a new instance of the APIKeyRequest class.
- * @constructor
- * An Application Insights component API Key createion request definition.
- *
- * @member {string} [name] The name of the API Key.
- * @member {array} [linkedReadProperties] The read access rights of this API
- * Key.
- * @member {array} [linkedWriteProperties] The write access rights of this API
- * Key.
- */
-export interface APIKeyRequest {
-  name?: string;
-  linkedReadProperties?: string[];
-  linkedWriteProperties?: string[];
-}
-
-/**
- * @class
- * Initializes a new instance of the ApplicationInsightsComponentAPIKey class.
- * @constructor
- * Properties that define an API key of an Application Insights Component.
- *
- * @member {string} [id] The unique ID of the API key inside an Applciation
- * Insights component. It is auto generated when the API key is created.
- * @member {string} [apiKey] The API key value. It will be only return once
- * when the API Key was created.
- * @member {string} [createdDate] The create date of this API key.
- * @member {string} [name] The name of the API key.
- * @member {array} [linkedReadProperties] The read access rights of this API
- * Key.
- * @member {array} [linkedWriteProperties] The write access rights of this API
- * Key.
- */
-export interface ApplicationInsightsComponentAPIKey {
-  readonly id?: string;
-  readonly apiKey?: string;
-  createdDate?: string;
-  name?: string;
-  linkedReadProperties?: string[];
-  linkedWriteProperties?: string[];
-}
-
-
-/**
- * @class
- * Initializes a new instance of the OperationListResult class.
- * @constructor
- * Result of the request to list CDN operations. It contains a list of
- * operations and a URL link to get the next set of results.
- *
- * @member {string} [nextLink] URL to get the next set of operation list
- * results if there are any.
- */
-export interface OperationListResult extends Array<Operation> {
-  nextLink?: string;
-}
-
-/**
- * @class
- * Initializes a new instance of the ApplicationInsightsComponentListResult class.
- * @constructor
- * Describes the list of Application Insights Resources.
- *
- * @member {string} [nextLink] The URI to get the next set of Application
- * Insights component defintions if too many components where returned in the
- * result set.
- */
-export interface ApplicationInsightsComponentListResult extends Array<ApplicationInsightsComponent> {
-  nextLink?: string;
-}
-
-/**
- * @class
- * Initializes a new instance of the WebTestListResult class.
- * @constructor
- * A list of 0 or more Application Insights web test definitions.
- *
- * @member {string} [nextLink] The link to get the next part of the returned
- * list of web tests, should the return set be too large for a single request.
- * May be null.
- */
-export interface WebTestListResult extends Array<WebTest> {
-  nextLink?: string;
-}
-
-/**
- * @class
- * Initializes a new instance of the ApplicationInsightsComponentAPIKeyListResult class.
- * @constructor
- * Describes the list of API Keys of an Application Insights Component.
- *
- */
-export interface ApplicationInsightsComponentAPIKeyListResult extends Array<ApplicationInsightsComponentAPIKey> {
-}

@@ -1,12 +1,12 @@
 {
-  "name": "azure-appinsights",
+  "name": "azure-arm-appinsights",
   "author": "Microsoft Corporation",
   "contributors": [
     "Schulte, Dan <daschult@microsoft.com>",
     "Zavery, Amar <amzavery@microsoft.com>"
   ],
   "version": "1.1.0-preview",
-  "description": "Microsoft Azure Application Insights Client Library for node",
+  "description": "Microsoft Azure Application Insights Management Client Library for node",
   "tags": [
     "azure",
     "sdk"
@@ -15,8 +15,8 @@
     "node",
     "azure"
   ],
-  "main": "./lib/applicationInsightsDataClient.js",
-  "types": "./lib/applicationInsightsDataClient.d.ts",
+  "main": "./lib/applicationInsightsManagementClient.js",
+  "types": "./lib/applicationInsightsManagementClient.d.ts",
   "license": "MIT",
   "dependencies": {
     "ms-rest": "^2.2.2",

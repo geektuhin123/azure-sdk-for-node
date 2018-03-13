@@ -22,6 +22,8 @@ declare class ApplicationInsightsManagementClient extends AzureServiceClient {
    *
    * @param {string} subscriptionId - The Azure subscription ID.
    *
+   * @param {string} purgeId - In a purge status request, this is the Id of the operation the status of which is returned.
+   *
    * @param {string} [baseUri] - The base URI of the service.
    *
    * @param {object} [options] - The parameter options
@@ -40,13 +42,15 @@ declare class ApplicationInsightsManagementClient extends AzureServiceClient {
    * @param {boolean} [options.generateClientRequestId] - When set to true a unique x-ms-client-request-id value is generated and included in each request. Default is true.
    *
    */
-  constructor(credentials: ServiceClientCredentials, subscriptionId: string, baseUri?: string, options?: AzureServiceClientOptions);
+  constructor(credentials: ServiceClientCredentials, subscriptionId: string, purgeId: string, baseUri?: string, options?: AzureServiceClientOptions);
 
   credentials: ServiceClientCredentials;
 
   apiVersion: string;
 
   subscriptionId: string;
+
+  purgeId: string;
 
   acceptLanguage: string;
 
@@ -56,12 +60,20 @@ declare class ApplicationInsightsManagementClient extends AzureServiceClient {
 
   // Operation groups
   operations: operations.Operations;
-  components: operations.Components;
-  webTests: operations.WebTests;
+  annotations: operations.Annotations;
+  aPIKeys: operations.APIKeys;
   exportConfigurations: operations.ExportConfigurations;
   componentCurrentBillingFeatures: operations.ComponentCurrentBillingFeatures;
   componentQuotaStatus: operations.ComponentQuotaStatus;
-  aPIKeys: operations.APIKeys;
+  componentFeatureCapabilities: operations.ComponentFeatureCapabilities;
+  componentAvailableFeatures: operations.ComponentAvailableFeatures;
+  proactiveDetectionConfigurations: operations.ProactiveDetectionConfigurations;
+  components: operations.Components;
+  workItemConfigurations: operations.WorkItemConfigurations;
+  favorites: operations.Favorites;
+  favorite: operations.Favorite;
+  webTestLocations: operations.WebTestLocations;
+  webTests: operations.WebTests;
 }
 
 export = ApplicationInsightsManagementClient;

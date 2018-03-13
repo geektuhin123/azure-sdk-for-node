@@ -23,8 +23,13 @@
   "applicationinsights": {
     "resource-manager": {
       "packageName": "azure-arm-appinsights",
-      "dir": "applicationinsights/lib",
+      "dir": "applicationinsightsManagement/lib",
       "source": "applicationinsights/resource-manager/readme.md"
+    },
+    "data-plane": {
+      "packageName": "azure-applicationinsights",
+      "dir": "applicationinsights/lib",
+      "source": "applicationinsights/data-plane/readme.md"
     }
   },
   "authorization": {
